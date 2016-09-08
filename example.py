@@ -1,7 +1,7 @@
 import os
 import json
 from azure.common.credentials import ServicePrincipalCredentials
-from azure.mgmt.resource import ResourceManagementClient
+import azure.mgmt.resource.resources
 
 WEST_US = 'westus'
 GROUP_NAME = 'azure-sample-group'
@@ -22,15 +22,21 @@ def run_example():
     #
     # Create the Resource Manager Client with an Application (service principal) token provider
     #
-    subscription_id = os.environ.get(
-        'AZURE_SUBSCRIPTION_ID',
-        '11111111-1111-1111-1111-111111111111') # your Azure Subscription Id
     credentials = ServicePrincipalCredentials(
         client_id=os.environ['AZURE_CLIENT_ID'],
         secret=os.environ['AZURE_CLIENT_SECRET'],
         tenant=os.environ['AZURE_TENANT_ID']
     )
-    client = ResourceManagementClient(credentials, subscription_id)
+
+    # Next line load "latest" => 2016-07-01
+    #client = azure.mgmt.resource.resources.client(credentials=credentials)
+
+    os.environ['AZURE_RESOURCE_RESOURCES_API_VERSION'] = '2016-02-01'
+    # Now load '2016-02-01'
+    client = azure.mgmt.resource.resources.client(credentials=credentials)
+
+    # Explicitly load '2016-02-01'
+    #client = azure.mgmt.resource.resources.client(api_version='2016-02-01', credentials=credentials)
 
     #
     # Managing resource groups
